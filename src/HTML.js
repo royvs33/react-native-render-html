@@ -153,10 +153,22 @@ export default class HTML extends PureComponent {
     };
     this.mounted = false;
     this.generateDefaultStyles(props.baseFontStyle);
+
+    //immediately register/parse DOM (enables SSR)
+    this.registerDOM(props);
+    this.parseDOM(this.state.dom, props);
   }
 
-  setStateSafe(...args) {
-    this.mounted && this.setState(...args);
+  setStateSafe(newState) {
+    //if not mounted yet, set to this.state variable directly
+    if (this.mounted) {
+      this.setState(newState);
+    } else {
+      this.state = {
+        ...this.state,
+        ...newState,
+      };
+    }
   }
 
   componentDidMount() {
